@@ -93,3 +93,4 @@ pytest tests/test_circuit_breaker.py -v
 
 * JOSS Submission: [https://joss.theoj.org/](https://joss.theoj.org/)
 * Circuit Breaker Pattern: [https://martinfowler.com/bliki/CircuitBreaker.html](https://martinfowler.com/bliki/CircuitBreaker.html)
+* My Story - From Crisis to Resilience: How a Circuit Breaker Saved Our Platform Post-Thanksgiving: [https://github.com/rohanrasane/devsculptcha/blob/main/docs/shortcircuit.md]
