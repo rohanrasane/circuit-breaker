@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Rasane
+    given-names: Rohan
+# doi: 10.5281/zenodo.xxxxx   <-- Commented out until Zenodo DOI is ready
+title: "Circuit Breaker Demo"
+version: 1.0.0
+date-released: 2025-10-08
+license: MIT
