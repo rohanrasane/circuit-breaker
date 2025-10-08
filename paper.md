@@ -1,48 +1,40 @@
 ---
 title: "Circuit Breaker Demo: A Lightweight Pattern for Service Resilience in High-Traffic Environments"
+authors:
+  - name: Rohan Rasane
+    affiliation: ServiceNow, San Jose, CA
+date: 2025-10-08
 tags:
   - Python
   - Distributed Systems
   - Fault Tolerance
-  - Software Architecture
   - Resilience Patterns
-authors:
-  - name: Rohan Rasane
-    orcid: 0009-0001-3207-7139
-    affiliation: 1
-affiliations:
-  - name: ServiceNow, San Jose, CA
-    index: 1
-date: 2025-10-08
-bibliography: paper.bib
+license: MIT
 ---
 
 # Summary
 
-The **Circuit Breaker Demo** provides a lightweight Python implementation of the *Circuit Breaker* design pattern, a proven strategy to improve resilience and fault tolerance in distributed systems. The circuit breaker prevents cascading failures by temporarily halting requests to downstream services when repeated errors occur, allowing the system to recover gracefully under high load or partial outages.
+The **Circuit Breaker Demo** is a compact Python implementation of the *Circuit Breaker* design pattern. The pattern helps prevent cascading failures in distributed systems by short-circuiting calls to unhealthy downstream services for a configurable cooldown period. This repository provides an implementation, unit tests, and a small simulation that demonstrates behavior under high load (a "Black Friday" payment processing scenario).
 
-This project demonstrates how resilience patterns can be applied to everyday API integrations, with clear examples simulating real-world scenarios such as peak traffic events and service degradation. The implementation is designed for educational use and as a reusable component for developers exploring system reliability techniques.
+# Statement of need
 
-# Statement of Need
+Modern microservice architectures depend on many networked services; failure or slowness in one service can quickly affect overall system availability. Developers, educators, and researchers need simple, well-documented implementations to experiment with resilience strategies before adopting them in production. This demo fills that need by offering:
 
-Modern distributed applications rely heavily on interconnected services and APIs. When one component fails or becomes slow, the failure can propagate, degrading the entire system. Architects and developers therefore require modular, testable tools to model and experiment with resilience mechanisms before production deployment.
-
-The **Circuit Breaker Demo** fills this gap by offering an open-source, minimal implementation that demonstrates:
-- The transition between **Closed**, **Open**, and **Half-Open** circuit states.
-- Configurable thresholds for failure and recovery.
-- Simple integration into Python services and microservice-based systems.
-- Logging and metrics hooks for monitoring and visualization.
-
-This software is especially useful for:
-- Developers learning fault-tolerance principles.
-- Educators demonstrating system resilience in distributed systems courses.
-- Researchers modeling reliability patterns for microservices.
+- A minimal, clear `CircuitBreaker` class that is easy to read and extend.
+- A simulation that shows how the breaker protects a payment service during traffic spikes.
+- Unit tests and usage examples that make the code easy to run and validate.
 
 # Implementation
 
-The library implements a class-based `CircuitBreaker` abstraction that wraps function calls and monitors exceptions. When failures exceed a threshold, the breaker enters an **Open** state, short-circuiting calls for a cooldown period before transitioning to **Half-Open** for recovery trials.
+The library provides a `CircuitBreaker` abstraction that can be used either as a decorator or by calling a `.call()` helper. Key features:
+
+- **States:** `CLOSED`, `OPEN`, `HALF_OPEN`.
+- **Configurable thresholds:** number of failures before opening, recovery timeout, and a success threshold while half-open.
+- **Simple exception handling:** treat any exception raised by the wrapped function as a failure (configurable in your code).
+- **Hooks:** easy places to plug in logging and metrics collection.
 
 Example usage:
+
 ```python
 from circuit_breaker import CircuitBreaker, CircuitBreakerError
 
@@ -50,10 +42,35 @@ breaker = CircuitBreaker(failure_threshold=3, recovery_timeout=10)
 
 @breaker
 def call_external_service():
-    # simulate transient failure
-    raise Exception("Service down")
+    # Replace with actual call to external dependency
+    raise Exception("Service unavailable")
 
 try:
     call_external_service()
 except CircuitBreakerError:
     print("Circuit is open; skipping call")
+```
+
+# Example scenario
+
+The included `simulate_black_friday.py` demonstrates a payment-processing service receiving many simulated orders. As failures occur on the downstream payment API, the circuit breaker opens and subsequent calls are short-circuited, preventing further load on the failing service and allowing the system to recover.
+
+# Testing
+
+Unit tests are provided in `tests/test_circuit_breaker.py` and can be run with:
+
+```bash
+pytest -q
+```
+
+The tests cover state transitions and the basic decorator / call behavior.
+
+# Acknowledgements
+
+Thanks to the designers and authors who popularized resilience patterns in distributed systems, and to the open-source tooling that simplifies testing and packaging Python projects.
+
+# References
+
+- Michael T. Nygard. *Release It!: Design and Deploy Production-Ready Software*. Pragmatic Bookshelf, 2007.
+- Martin Fowler. "Circuit Breaker" pattern. https://martinfowler.com/bliki/CircuitBreaker.html
+- R. Rasane. "From Crisis to Resilience: How a Circuit Breaker Saved Our Platform Post-Thanksgiving." https://github.com/rohanrasane/devsculptcha/blob/main/docs/shortcircuit.md
